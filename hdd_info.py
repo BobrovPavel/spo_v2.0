@@ -31,6 +31,7 @@ from pprint import pprint
 
 
 import psutil
+import wmi
 
 dps = psutil.disk_partitions()
 
@@ -47,20 +48,26 @@ class DiskInfo:
         result = {}
         for device in self.get_all_devices():
             result[device] = {k: v for (k, v) in
-                              zip(spaces, [tmp.get(device).total, tmp.get(device).used, tmp.get(device).free, tmp.get(device).percent])}
+                              zip(spaces, [tmp.get(device).total, tmp.get(device).used, tmp.get(device).free,
+                                           tmp.get(device).percent])}
         return result
 
     def convert_to_gb(self, number):
         return float('{:.3f}'.format(number / math.pow(1024, 3)))
 
 
-disk = DiskInfo()
-# print(disk.convert_to_gb(disk.get_devices_space().get("D:\\").free))
+# class MBInfo:
+# import wmi
 #
-# print(disk.get_devices_space())
-# pprint(disk.get_devices_space().get("D:\\").free)
-# pprint(disk.get_devices_space().get("C:\\"))
-#
-# print([dp.fstype + ":" + dp.device for dp in dps])
+# c = wmi.WMI()
+# for s in c.Win32_Service():
+#     if s.State == 'Stopped':
+#         print(s.Caption, s.State)
 
-print(disk.get_devices_space())
+import os
+
+print(os.system("wmic baseboard get Manufacturer,CreationClassName, Product"))
+
+
+
+print(os.system("Get-WmiObject win32_baseboard | Format-List Product,Manufacturer,SerialNumber,Version"))

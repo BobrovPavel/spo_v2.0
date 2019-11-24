@@ -1,8 +1,9 @@
 import sys
 from PyQt5 import *
+from PyQt5 import QtCore
 from PyQt5.QtWidgets import *
 
-from qwe import DiskInfo
+from hdd_info import DiskInfo
 
 
 class tabdemo(QTabWidget):
@@ -17,6 +18,7 @@ class tabdemo(QTabWidget):
         self.addTab(self.tab1, "Tab 1")
         self.addTab(self.tab2, "Tab 2")
         self.addTab(self.tab3, "Tab 3")
+
         self.tab1UI()
         self.tab2UI()
         self.tab3UI()
@@ -30,15 +32,13 @@ class tabdemo(QTabWidget):
     #     self.tab1.setLayout(layout)
 
     def tab1UI(self):
-        layout = QGridLayout()
-        layout.setContentsMargins(0, 0, 0, 0)
-        layout.setSpacing(0)
-        layout.setObjectName("gridLayout")
-        self.show_disk_table_headers(layout)
-        self.show_disk_form(layout)
-
-        self.setTabText(0, "Contact Details")
-        self.tab1.setLayout(layout)
+        grid_layout = QGridLayout()
+        self.setTabText(0, "Disk Info")
+        self.tab1.setLayout(grid_layout)
+        grid_layout.setSpacing(0)
+        grid_layout.setObjectName("gridLayout")
+        self.show_disk_table_headers(grid_layout)
+        self.show_disk_form(grid_layout)
 
     def tab2UI(self):
         layout = QFormLayout()
@@ -63,7 +63,7 @@ class tabdemo(QTabWidget):
         position = 2
         for header in headers:
             title = QLabel(self)
-            title.setStyleSheet("font-size:18px; margin: 2px auto;")
+            title.setStyleSheet("font-size:18px; max-height: 30px")
             title.setText(header)
             title.setObjectName("header")
             layout.addWidget(title, 0, position)
@@ -71,7 +71,7 @@ class tabdemo(QTabWidget):
 
     def draw_disk_info_row(self, position_x, position_y, value, layout):
         text_edit = QTextEdit()
-        text_edit.setStyleSheet("font-size: 17px;")
+        text_edit.setStyleSheet("font-size: 17px; max-height: 30px;")
         text_edit.setObjectName("text_edit")
         layout.addWidget(text_edit, position_x, position_y)
         text_edit.setText(value)
@@ -80,7 +80,7 @@ class tabdemo(QTabWidget):
         string_number = 1
         for disk in self.disk.get_all_devices():
             label = QLabel(self)
-            label.setStyleSheet("font-size: 20px; margin: auto 2px;")
+            label.setStyleSheet("font-size: 20px;")
             label.setObjectName("label")
             layout.addWidget(label, string_number, 1)
             label.setText(disk)
@@ -88,6 +88,7 @@ class tabdemo(QTabWidget):
             self.draw_disk_info_row(string_number, 3, str(self.disk.get_devices_space().get(disk).get("used")), layout)
             self.draw_disk_info_row(string_number, 4, str(self.disk.get_devices_space().get(disk).get("free")), layout)
             self.draw_disk_info_row(string_number, 5, str(self.disk.get_devices_space().get(disk).get("percent")), layout)
+
             string_number += 1
 
 
