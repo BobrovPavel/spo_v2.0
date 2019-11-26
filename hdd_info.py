@@ -33,6 +33,8 @@ from pprint import pprint
 import psutil
 
 dps = psutil.disk_partitions()
+for d in dps:
+    print(d.fstype)
 
 
 class DiskInfo:
@@ -50,6 +52,9 @@ class DiskInfo:
                               zip(spaces, [tmp.get(device).total, tmp.get(device).used, tmp.get(device).free, tmp.get(device).percent])}
         return result
 
+    def get_devices_file_syste(self):
+        return {k: v for (k, v) in zip(self.get_all_devices(), (device.fstype for device in dps))}
+
     def convert_to_gb(self, number):
         return float('{:.3f}'.format(number / math.pow(1024, 3)))
 
@@ -63,4 +68,17 @@ disk = DiskInfo()
 #
 # print([dp.fstype + ":" + dp.device for dp in dps])
 
-print(disk.get_devices_space())
+# print(disk.get_devices_space())
+print(disk.get_devices_file_syste())
+
+import win32api
+
+drives = win32api.GetLogicalDriveStrings()
+print(win32api.GetVolumeInformation("D:\\"))
+import wmi
+
+c = wmi.WMI()
+for item in c.Win32_PhysicalMedia():
+    print(item)
+
+print(win32api.GetVolumeInformation("C:\\") )
