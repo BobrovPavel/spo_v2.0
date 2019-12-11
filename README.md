@@ -12,3 +12,9 @@ $ cd spo_v2.0.git
 $ pip install -r requirements.txt
 ```
 Run "wdiget.py" file
+
+### For create .exe file
+```bash
+$ pip install https://github.com/pyinstaller/pyinstaller/archive/develop.tar.gz
+$ pyinstaller --onefile --windowed widget.py
+```
