@@ -8,7 +8,7 @@
 ### To install and run
 ```bash
 $ git clone https://github.com/BobrovPavel/spo_v2.0.git
-$ cd spo_v2.0.git
+$ cd spo_v2.0
 $ pip install -r requirements.txt
 ```
 Run "wdiget.py" file
