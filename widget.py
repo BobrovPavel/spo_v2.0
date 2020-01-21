@@ -22,6 +22,7 @@ class MyWidget(QMainWindow):
         self.tab5 = QWidget()
         self.tab6 = QWidget()
         self.tab7 = QWidget()
+        self.tab8 = QWidget()
 
         self.cpu_tab = QScrollArea()
         self.cpu_tab.setWidget(self.tab3)
@@ -35,6 +36,10 @@ class MyWidget(QMainWindow):
         self.users_tab.setWidget(self.tab7)
         self.users_tab.setWidgetResizable(True)
 
+        self.devices_tab = QScrollArea()
+        self.devices_tab.setWidget(self.tab8)
+        self.devices_tab.setWidgetResizable(True)
+
         self.uptime_time_label = QLabel()
         self.tabwidget.addTab(self.tab1, "Disk Info")
         self.tabwidget.addTab(self.tab2, "BIOS Info")
@@ -43,9 +48,11 @@ class MyWidget(QMainWindow):
         self.tabwidget.addTab(self.tab4, "Board Info")
         self.tabwidget.addTab(self.users_tab, "Users")
         self.tabwidget.addTab(self.tab5, "Time Info")
+        self.tabwidget.addTab(self.devices_tab, "Devices")
         self.show_tabs()
         self.show_time()
         self.show_users_info()
+        self.show_devices_info()
         self.show_tool_bar()
         self.setWindowTitle("Spo Project")
         self.setWindowIcon(QIcon("images/icon.png"))
@@ -57,7 +64,7 @@ class MyWidget(QMainWindow):
             for i in create_report():
                 file.write(i)
 
-    # Back up the reference to the exceptionhook
+    # Back up the reference to the exception hook
     sys._excepthook = sys.excepthook
 
     def my_exception_hook(exctype, value, traceback):
@@ -117,10 +124,10 @@ class MyWidget(QMainWindow):
         self.verticalLayout_2 = QVBoxLayout()
         for k, v in data:
             label = QLabel(k)
-            label.setStyleSheet("max-height: 20px; font-size: 17px; max-width: 350px;")
+            label.setStyleSheet("max-height: 20px; font-size: 17px; min-width: 300px; background: #ebe7dc;")
             self.verticallayout.addWidget(label)
             label_2 = QLabel(v)
-            label_2.setStyleSheet("max-height: 20px; font-size: 17px; max-width: 350px;")
+            label_2.setStyleSheet("max-height: 20px; font-size: 17px; max-width: 350px")
             self.verticalLayout_2.addWidget(label_2)
 
         last_label = QLabel()
@@ -152,14 +159,44 @@ class MyWidget(QMainWindow):
 
             for k, v in value.items():
                 self.user_key_label = QLabel(k)
-                self.user_key_label.setStyleSheet("max-height: 20px; font-size: 17px; max-width: 350px;")
+                self.user_key_label.setStyleSheet(
+                    "max-height: 20px; font-size: 17px; max-width: 300px; background: #ebe7dc;")
                 self.user_key_layout.addWidget(self.user_key_label)
 
                 self.user_value_label = QLabel(v)
-                self.user_value_label.setStyleSheet("max-height: 20px; font-size: 17px; max-width: 350px;")
+                self.user_value_label.setStyleSheet("max-height: 20px; font-size: 17px; max-width: 350px")
                 self.user_value_layout.addWidget(self.user_value_label)
 
         self.tab7.setLayout(self.layout)
+
+    def show_devices_info(self):
+        self.devices_layout = QVBoxLayout()
+        for key, value in get_devices_info().items():
+            self.devices_name_layout = QVBoxLayout()
+            self.qh = QHBoxLayout()
+            self.device_name_label = QLabel(key)
+            self.devices_name_layout.addWidget(self.device_name_label)
+            self.device_name_label.setStyleSheet("max-height: 30px; font-size: 27px; margin: 20px 0 5px")
+            self.device_name_label.setAlignment(QtCore.Qt.AlignCenter)
+            self.devices_layout.addLayout(self.devices_name_layout)
+
+            self.device_key_layout = QVBoxLayout()
+            self.device_value_layout = QVBoxLayout()
+            self.devices_name_layout.addLayout(self.qh)
+            self.qh.addLayout(self.device_key_layout)
+            self.qh.addLayout(self.device_value_layout)
+
+            for k, v in value.items():
+                self.device_key_label = QLabel(k)
+                self.device_key_label.setStyleSheet(
+                    "max-height: 20px; font-size: 17px; max-width: 300px; background: #ebe7dc;")
+                self.device_key_layout.addWidget(self.device_key_label)
+
+                self.device_value_label = QLabel(v)
+                self.device_value_label.setStyleSheet("max-height: 20px; font-size: 17px; max-width: 350px")
+                self.device_value_layout.addWidget(self.device_value_label)
+
+        self.tab8.setLayout(self.devices_layout)
 
     def show_time(self):
         self.layout = QVBoxLayout()
@@ -171,7 +208,7 @@ class MyWidget(QMainWindow):
         self.label = QLabel("Current Time")
         self.label.setStyleSheet("max-height: 25px;")
         self.layout.addWidget(self.label, 0, QtCore.Qt.AlignHCenter)
-        self.current_time_label = QLabel(str(datetime.datetime.today()))
+        self.current_time_label = QLabel(str(datetime.datetime.today().replace(microsecond=0)))
         self.current_time_label.setStyleSheet("max-height: 45px; font-size: 40px; margin-bottom: 40px;")
         self.layout.addWidget(self.current_time_label, 0, QtCore.Qt.AlignHCenter)
         self.label_1 = QLabel("Last BootTime")
@@ -232,7 +269,7 @@ def main():
     ex.show()
     timer = QTimer()
     timer.timeout.connect(ex.update_time)
-    timer.start(100)
+    timer.start(200)
     # sys.exit(app.exec_())
 
     try:
