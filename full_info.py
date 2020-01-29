@@ -8,23 +8,15 @@ import psutil
 
 dps = psutil.disk_partitions()
 c = wmi.WMI()
-cpu = c.Win32_Processor()[0]
-gpu = c.Win32_VideoController()[0]
-bios = c.Win32_Bios()[0]
-board = c.Win32_BaseBoard()[0]
-users = c.Win32_UserAccount()
-
-wmi_monitor = c.Win32_DesktopMonitor()[0]
-wmi_keyboard = c.Win32_Keyboard()[0]
-wmi_mouse = c.Win32_PnpEntity()[0]
-wmi_networkAdapter = c.Win32_NetworkAdapter()[0]
 
 
 def get_all_devices():
+    print("get_all_devices")
     return [dp.device for dp in dps]
 
 
 def get_devices_space():
+    print("get_devices_space")
     result = {}
     try:
         tmp = {k: v for (k, v) in
@@ -40,48 +32,66 @@ def get_devices_space():
 
 
 def get_devices_file_system():
+    print("get_devices_file_system")
     return {k: v for (k, v) in zip(get_all_devices(), (device.fstype for device in dps))}
 
 
 def convert_to_gb(number):
+    print("convert_to_gb")
     return float('{:.3f}'.format(number / math.pow(1024, 3)))
 
 
 def get_bios_info():
+    print("get_bios_info")
+    bios = c.Win32_Bios()[0]
+
     keys = [x.strip() for x in re.findall('(.*?)=', str(bios))]
     values = [x.strip('"') for x in re.findall('=\s+([^\n]+)[\;]', str(bios))]
     return {k: v for (k, v) in zip(keys, values)}
 
 
 def get_cpu_info():
+    print("get_cpu_info")
+    cpu = c.Win32_Processor()[0]
+
     keys = [x.strip() for x in re.findall('(.*?)=', str(cpu))]
     values = [x.strip('"') for x in re.findall('=\s+([^\n]+)[\;]', str(cpu))]
     return {k: v for (k, v) in zip(keys, values)}
 
 
 def get_gpu_info():
+    print("get_gpu_info")
+    gpu = c.Win32_VideoController()[0]
+
     keys = [x.strip() for x in re.findall('(.*?)=', str(gpu))]
     values = [x.strip('"') for x in re.findall('=\s+([^\n]+)[\;]', str(gpu))]
     return {k: v for (k, v) in zip(keys, values)}
 
 
 def get_board_info():
+    board = c.Win32_BaseBoard()[0]
+
+    print("get_board_info")
     keys = [x.strip() for x in re.findall('(.*?)=', str(board))]
     values = [x.strip('"') for x in re.findall('=\s+([^\n]+)[\;]', str(board))]
     return {k: v for (k, v) in zip(keys, values)}
 
 
 def get_time():
+    print("get_time")
     time = uptime.uptime()
     days = time // (24 * 3600)
     hours = (time - days * 3600 * 24) // 3600
     minutes = (time - days * 3600 * 24 - hours * 3600) // 60
     seconds = time - days * 3600 * 24 - hours * 3600 - minutes * 60
-    return {"Uptime": f"{int(days)} days, {int(hours)} hours, {int(minutes)} minutes, {seconds:.3f} seconds",
-            "BootTime": str(uptime.boottime())}
+    return {"Uptime": f"{int(days)} days, {int(hours)} hours, {int(minutes)} minutes, {int(seconds)} seconds",
+            "BootTime": str(uptime.boottime().replace(microsecond=0))}
 
 
 def get_users():
+    print("get_users")
+    users = c.Win32_UserAccount()
+
     user_list = {}
     for user in users:
         keys = [x.strip() for x in re.findall('(.*?)=', str(user))]
@@ -92,6 +102,11 @@ def get_users():
 
 
 def get_devices_info():
+    print("get_devices_info")
+    wmi_monitor = c.Win32_DesktopMonitor()[0]
+    wmi_keyboard = c.Win32_Keyboard()[0]
+    wmi_mouse = c.Win32_PnpEntity()[0]
+    wmi_networkAdapter = c.Win32_NetworkAdapter()[0]
     devices = {}
     keys = [x.strip() for x in re.findall('(.*?)=', str(wmi_monitor))]
     values = [x.strip('"') for x in re.findall('=\s+([^\n]+)[\;]', str(wmi_monitor))]
@@ -113,6 +128,7 @@ def get_devices_info():
 
 
 def create_report():
+    print("create_report")
     result = []
     result.append("\n---------------DISK INFO---------------\n")
     for k, v in get_devices_space().items():
@@ -133,12 +149,13 @@ def create_report():
         result.append(f"{k}: {v} \n")
     return result
 
-
 # print(c.Win32_DesktopMonitor()[0])
 # print(c.Win32_Keyboard()[0])
 # print(c.Win32_PnpEntity()[0])
 # print(c.Win32_NetworkAdapter()[0])
 
 # print(get_devices_info())
+import datetime
 
-print(bios)
+
+print(str(datetime.datetime.today()))
