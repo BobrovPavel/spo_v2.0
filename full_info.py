@@ -38,7 +38,7 @@ def get_devices_file_system():
 
 def convert_to_gb(number):
     print("convert_to_gb")
-    return float('{:.3f}'.format(number / math.pow(1024, 3)))
+    return f"{number / math.pow(1024, 3):.2f}"
 
 
 def get_bios_info():
@@ -78,7 +78,7 @@ def get_board_info():
 
 
 def get_time():
-    print("get_time")
+    # print("get_time")
     time = uptime.uptime()
     days = time // (24 * 3600)
     hours = (time - days * 3600 * 24) // 3600
@@ -158,4 +158,7 @@ def create_report():
 import datetime
 
 
-print(str(datetime.datetime.today()))
+print(str(get_devices_space().get("C:\\").get("total"))+convert_to_gb(get_devices_space().get("C:\\").get("total")))
+
+
+

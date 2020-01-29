@@ -36,19 +36,27 @@ class MyWidget(QMainWindow):
         self.users_tab.setWidget(self.tab7)
         self.users_tab.setWidgetResizable(True)
 
+        self.board_tab = QScrollArea()
+        self.board_tab.setWidget(self.tab4)
+        self.board_tab.setWidgetResizable(True)
+
+        self.bios_tab = QScrollArea()
+        self.bios_tab.setWidget(self.tab2)
+        self.bios_tab.setWidgetResizable(True)
+
         self.devices_tab = QScrollArea()
         self.devices_tab.setWidget(self.tab8)
         self.devices_tab.setWidgetResizable(True)
 
         self.uptime_time_label = QLabel()
         self.tabwidget.addTab(self.tab1, "Disk Info")
-        self.tabwidget.addTab(self.tab2, "BIOS Info")
+        self.tabwidget.addTab(self.bios_tab, "BIOS Info")
         self.tabwidget.addTab(self.cpu_tab, "CPU Info")
         self.tabwidget.addTab(self.gpu_tab, "GPU Info")
-        self.tabwidget.addTab(self.tab4, "Board Info")
+        self.tabwidget.addTab(self.board_tab, "Board Info")
+        self.tabwidget.addTab(self.devices_tab, "Devices")
         self.tabwidget.addTab(self.users_tab, "Users")
         self.tabwidget.addTab(self.tab5, "Time Info")
-        self.tabwidget.addTab(self.devices_tab, "Devices")
         self.show_tabs()
         self.show_time()
         self.show_users_info()
@@ -124,10 +132,11 @@ class MyWidget(QMainWindow):
         self.verticalLayout_2 = QVBoxLayout()
         for k, v in data:
             label = QLabel(k)
-            label.setStyleSheet("max-height: 20px; font-size: 17px; min-width: 300px; background: #ebe7dc;")
+            label.setStyleSheet(
+                "max-height: 20px; font-size: 17px; min-width: 300px; background: #ebe7dc; padding: 2px; margin: 1px;")
             self.verticallayout.addWidget(label)
             label_2 = QLabel(v)
-            label_2.setStyleSheet("max-height: 20px; font-size: 17px; max-width: 350px")
+            label_2.setStyleSheet("max-height: 20px; font-size: 17px; max-width: 350px; padding: 2px; margin: 1px;")
             self.verticalLayout_2.addWidget(label_2)
 
         last_label = QLabel()
@@ -160,11 +169,12 @@ class MyWidget(QMainWindow):
             for k, v in value.items():
                 self.user_key_label = QLabel(k)
                 self.user_key_label.setStyleSheet(
-                    "max-height: 20px; font-size: 17px; max-width: 300px; background: #ebe7dc;")
+                    "max-height: 20px; font-size: 17px; max-width: 300px; background: #ebe7dc; padding: 2px; margin: 1px;")
                 self.user_key_layout.addWidget(self.user_key_label)
 
                 self.user_value_label = QLabel(v)
-                self.user_value_label.setStyleSheet("max-height: 20px; font-size: 17px; max-width: 350px")
+                self.user_value_label.setStyleSheet(
+                    "max-height: 20px; font-size: 17px; max-width: 350px; padding: 2px; margin: 1px;")
                 self.user_value_layout.addWidget(self.user_value_label)
 
         self.tab7.setLayout(self.layout)
@@ -189,11 +199,12 @@ class MyWidget(QMainWindow):
             for k, v in value.items():
                 self.device_key_label = QLabel(k)
                 self.device_key_label.setStyleSheet(
-                    "max-height: 20px; font-size: 17px; max-width: 300px; background: #ebe7dc;")
+                    "max-height: 20px; font-size: 17px; max-width: 300px; background: #ebe7dc; padding: 2px; margin: 1px;")
                 self.device_key_layout.addWidget(self.device_key_label)
 
                 self.device_value_label = QLabel(v)
-                self.device_value_label.setStyleSheet("max-height: 20px; font-size: 17px; max-width: 350px")
+                self.device_value_label.setStyleSheet(
+                    "max-height: 20px; font-size: 17px; max-width: 350px; padding: 2px; margin: 1px;")
                 self.device_value_layout.addWidget(self.device_value_label)
 
         self.tab8.setLayout(self.devices_layout)
@@ -223,7 +234,7 @@ class MyWidget(QMainWindow):
 
     def update_time(self):
         self.uptime_time_label.setText(get_time().get("Uptime"))
-        self.current_time_label.setText(str(datetime.datetime.today()))
+        self.current_time_label.setText(str(datetime.datetime.today().strftime("%d.%m.%Y %H:%M:%S")))
 
     def show_disk_table_headers(self, layout):
         headers = ["Total", "Used", "Free", "Percent", "File System"]
@@ -236,22 +247,23 @@ class MyWidget(QMainWindow):
 
     def draw_disk_info_row(self, position_x, position_y, value, layout):
         text_edit = QTextEdit(value)
-        text_edit.setStyleSheet("font-size: 17px; max-height: 30px; max-width: 150px;")
+        text_edit.setStyleSheet("font-size: 17px; max-height: 30px; max-width: 250px;")
         layout.addWidget(text_edit, position_x, position_y)
 
     def show_disk_form(self, layout):
         string_number = 1
         try:
-            for disk in get_all_devices():
-                label = QLabel(disk)
-                label.setStyleSheet("font-size: 20px; max-height: 30px; max-width: 50px;")
-                layout.addWidget(label, string_number, 1)
-                self.draw_disk_info_row(string_number, 2, str(get_devices_space().get(disk).get("total")), layout)
-                self.draw_disk_info_row(string_number, 3, str(get_devices_space().get(disk).get("used")), layout)
-                self.draw_disk_info_row(string_number, 4, str(get_devices_space().get(disk).get("free")), layout)
-                self.draw_disk_info_row(string_number, 5, str(get_devices_space().get(disk).get("percent")), layout)
-                self.draw_disk_info_row(string_number, 6, str(get_devices_file_system().get(disk)), layout)
-                string_number += 1
+        for disk in get_all_devices():
+            label = QLabel(disk)
+            label.setStyleSheet("font-size: 20px; max-height: 30px; max-width: 50px;")
+            layout.addWidget(label, string_number, 1)
+            self.draw_disk_info_row(string_number, 2, convert_to_gb(get_devices_space().get(disk).get("total")) + " GB", layout)
+
+            self.draw_disk_info_row(string_number, 3, convert_to_gb(get_devices_space().get(disk).get("used")) + " GB", layout)
+            self.draw_disk_info_row(string_number, 4, convert_to_gb(get_devices_space().get(disk).get("free")) + " GB", layout)
+            self.draw_disk_info_row(string_number, 5, str(get_devices_space().get(disk).get("percent")), layout)
+            self.draw_disk_info_row(string_number, 6, get_devices_file_system().get(disk), layout)
+            string_number += 1
         except:
             for disk in get_all_devices():
                 label = QLabel(disk)
@@ -260,7 +272,7 @@ class MyWidget(QMainWindow):
                 self.draw_disk_info_row(string_number, 2, "Access Denied", layout)
                 string_number += 1
         last_label = QLabel()
-        layout.addWidget(last_label, string_number, 7)
+        layout.addWidget(last_label, string_number + 1, 7)
 
 
 def main():
