@@ -91,7 +91,6 @@ def get_time():
 def get_users():
     print("get_users")
     users = c.Win32_UserAccount()
-
     user_list = {}
     for user in users:
         keys = [x.strip() for x in re.findall('(.*?)=', str(user))]
@@ -99,6 +98,17 @@ def get_users():
         name = user.name
         user_list[name] = {k: v for (k, v) in zip(keys, values)}
     return user_list
+
+def get_processes_info():
+    print("get_processes")
+    processes = c.Win32_Process()
+    processes_list = {}
+    for process in processes:
+        keys = [x.strip() for x in re.findall('(.*?)=', str(process))]
+        values = [x.strip('"') for x in re.findall('=\s+([^\n]+)[\;]', str(process))]
+        name = process.name
+        processes_list[name] = {k: v for (k, v) in zip(keys, values)}
+    return processes_list
 
 
 def get_devices_info():
@@ -138,27 +148,27 @@ def create_report():
     result.append("\n---------------BIOS INFO---------------\n")
     for k, v in get_bios_info().items():
         result.append(f"{k}: {v} \n")
-    result.append("\n---------------CPU INF---------------\n")
+    result.append("\n---------------CPU INFO---------------\n")
     for k, v in get_cpu_info().items():
+        result.append(f"{k}: {v} \n")
+    result.append("\n---------------GPU INFO---------------\n")
+    for k, v in get_gpu_info().items():
         result.append(f"{k}: {v} \n")
     result.append("\n---------------MOTHERBOARD INFO---------------\n")
     for k, v in get_board_info().items():
+        result.append(f"{k}: {v} \n")
+    result.append("\n---------------DEVICES INFO---------------\n")
+    for k, v in get_devices_info().items():
+        result.append(f"{k}: {v} \n")
+    result.append("\n---------------USERS INFO---------------\n")
+    for k, v in get_users().items():
+        result.append(f"{k}: {v} \n")
+    result.append("\n---------------PROCESSES INFO---------------\n")
+    for k, v in get_processes_info().items():
         result.append(f"{k}: {v} \n")
     result.append("\n---------------TIME INFO---------------\n")
     for k, v in get_time().items():
         result.append(f"{k}: {v} \n")
     return result
-
-# print(c.Win32_DesktopMonitor()[0])
-# print(c.Win32_Keyboard()[0])
-# print(c.Win32_PnpEntity()[0])
-# print(c.Win32_NetworkAdapter()[0])
-
-# print(get_devices_info())
-import datetime
-
-
-print(str(get_devices_space().get("C:\\").get("total"))+convert_to_gb(get_devices_space().get("C:\\").get("total")))
-
 
 

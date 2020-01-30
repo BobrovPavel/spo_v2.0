@@ -1,5 +1,7 @@
 import os
 import sys
+import time
+
 import dropbox
 import datetime
 from full_info import *
@@ -12,6 +14,7 @@ from PyQt5.QtCore import QTimer
 class MyWidget(QMainWindow):
     def __init__(self):
         super().__init__()
+
         self.tabwidget = QTabWidget()
         self.resize(1000, 500)
         self.tab1 = QWidget()
@@ -23,6 +26,7 @@ class MyWidget(QMainWindow):
         self.tab6 = QWidget()
         self.tab7 = QWidget()
         self.tab8 = QWidget()
+        self.tab9 = QWidget()
 
         self.cpu_tab = QScrollArea()
         self.cpu_tab.setWidget(self.tab3)
@@ -48,6 +52,10 @@ class MyWidget(QMainWindow):
         self.devices_tab.setWidget(self.tab8)
         self.devices_tab.setWidgetResizable(True)
 
+        self.processes_tab = QScrollArea()
+        self.processes_tab.setWidget(self.tab9)
+        self.processes_tab.setWidgetResizable(True)
+
         self.uptime_time_label = QLabel()
         self.tabwidget.addTab(self.tab1, "Disk Info")
         self.tabwidget.addTab(self.bios_tab, "BIOS Info")
@@ -56,15 +64,16 @@ class MyWidget(QMainWindow):
         self.tabwidget.addTab(self.board_tab, "Board Info")
         self.tabwidget.addTab(self.devices_tab, "Devices")
         self.tabwidget.addTab(self.users_tab, "Users")
+        self.tabwidget.addTab(self.processes_tab, "Processes")
         self.tabwidget.addTab(self.tab5, "Time Info")
         self.show_tabs()
         self.show_time()
         self.show_users_info()
         self.show_devices_info()
+        self.show_processes_info()
         self.show_tool_bar()
         self.setWindowTitle("Spo Project")
         self.setWindowIcon(QIcon("images/icon.png"))
-
         self.setCentralWidget(self.tabwidget)
 
     def on_download_click(self):
@@ -209,6 +218,36 @@ class MyWidget(QMainWindow):
 
         self.tab8.setLayout(self.devices_layout)
 
+    def show_processes_info(self):
+        self.processes_layout = QVBoxLayout()
+        for key, value in get_processes_info().items():
+            self.processes_name_layout = QVBoxLayout()
+            self.qh = QHBoxLayout()
+            self.process_name_label = QLabel(key)
+            self.processes_name_layout.addWidget(self.process_name_label)
+            self.process_name_label.setStyleSheet("max-height: 30px; font-size: 27px; margin: 20px 0 5px")
+            self.process_name_label.setAlignment(QtCore.Qt.AlignCenter)
+            self.processes_layout.addLayout(self.processes_name_layout)
+
+            self.process_key_layout = QVBoxLayout()
+            self.process_value_layout = QVBoxLayout()
+            self.processes_name_layout.addLayout(self.qh)
+            self.qh.addLayout(self.process_key_layout)
+            self.qh.addLayout(self.process_value_layout)
+
+            for k, v in value.items():
+                self.process_key_label = QLabel(k)
+                self.process_key_label.setStyleSheet(
+                    "max-height: 20px; font-size: 17px; max-width: 300px; background: #ebe7dc; padding: 2px; margin: 1px;")
+                self.process_key_layout.addWidget(self.process_key_label)
+
+                self.process_value_label = QLabel(v)
+                self.process_value_label.setStyleSheet(
+                    "max-height: 20px; font-size: 17px; max-width: 350px; padding: 2px; margin: 1px;")
+                self.process_value_layout.addWidget(self.process_value_label)
+
+        self.tab9.setLayout(self.processes_layout)
+
     def show_time(self):
         self.layout = QVBoxLayout()
         self.label_2 = QLabel("Current Uptime")
@@ -257,10 +296,13 @@ class MyWidget(QMainWindow):
             label = QLabel(disk)
             label.setStyleSheet("font-size: 20px; max-height: 30px; max-width: 50px;")
             layout.addWidget(label, string_number, 1)
-            self.draw_disk_info_row(string_number, 2, convert_to_gb(get_devices_space().get(disk).get("total")) + " GB", layout)
+            self.draw_disk_info_row(string_number, 2,
+                                    convert_to_gb(get_devices_space().get(disk).get("total")) + " GB", layout)
 
-            self.draw_disk_info_row(string_number, 3, convert_to_gb(get_devices_space().get(disk).get("used")) + " GB", layout)
-            self.draw_disk_info_row(string_number, 4, convert_to_gb(get_devices_space().get(disk).get("free")) + " GB", layout)
+            self.draw_disk_info_row(string_number, 3,
+                                    convert_to_gb(get_devices_space().get(disk).get("used")) + " GB", layout)
+            self.draw_disk_info_row(string_number, 4,
+                                    convert_to_gb(get_devices_space().get(disk).get("free")) + " GB", layout)
             self.draw_disk_info_row(string_number, 5, str(get_devices_space().get(disk).get("percent")), layout)
             self.draw_disk_info_row(string_number, 6, get_devices_file_system().get(disk), layout)
             string_number += 1
